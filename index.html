@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>C The Details — Car Wash & Cleaning | Columbus, OH</title>
+<meta name="description" content="Professional car detailing in Columbus, Ohio. Book online today. C The Details — Car Wash & Cleaning by Carlos Garcia."/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<style>
+/* ── RESET & TOKENS ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#07080a;--dark:#0d0f12;--card:#13161a;--card2:#1a1e24;
+  --border:rgba(255,255,255,0.07);--border2:rgba(61,184,200,0.25);
+  --teal:#3db8c8;--teal2:#2a9aaa;--teal-bg:rgba(61,184,200,0.08);
+  --text:#f0f2f4;--muted:#8a9099;--subtle:#3a4048;
+  --danger:#ff6060;--success:#3ecf8e;--warn:#f0a030;
+  --r:14px;--r-sm:8px;
+}
+html{scroll-behavior:smooth;background:var(--black)}
+body{font-family:'DM Sans',sans-serif;color:var(--text);font-size:15px;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:'DM Sans',sans-serif;cursor:pointer}
+img{max-width:100%}
+
+/* ── SCREENS ── */
+#public-site{display:block}
+#crm-app{display:none;height:100vh;height:100dvh;flex-direction:column;overflow:hidden}
+#crm-app.active{display:flex}
+#login-gate{display:none;position:fixed;inset:0;background:var(--black);z-index:9999;align-items:center;justify-content:center;padding:20px}
+#login-gate.active{display:flex}
+#crm-loading{display:none;position:fixed;inset:0;background:var(--black);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#crm-loading.active{display:flex}
+
+/* ── PUBLIC SITE ── */
+
+/* NAV */
+.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,10,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.pub-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:var(--text)}
+.pub-logo span{color:var(--teal)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--teal)}
+.nav-cta{background:var(--teal);color:var(--black);padding:9px 20px;border-radius:var(--r-sm);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:background .2s;border:none}
+.nav-cta:hover{background:var(--teal2)}
+.nav-emp-link{font-size:12px;color:var(--subtle);padding:7px 12px;border:1px solid var(--subtle);border-radius:var(--r-sm);transition:all .2s;cursor:pointer;background:none}
+.nav-emp-link:hover{border-color:var(--teal);color:var(--teal)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;padding:120px 5% 80px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(61,184,200,0.07) 0%,transparent 70%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(61,184,200,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(61,184,200,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%)}
+.hero-content{text-align:center;max-width:780px;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--teal-bg);border:1px solid var(--border2);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:28px}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,14vw,140px);line-height:.92;letter-spacing:.04em;color:var(--text);margin-bottom:8px}
+.hero-h1 span{color:var(--teal)}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--muted);max-width:520px;margin:0 auto 40px;font-weight:300;line-height:1.7}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-teal{background:var(--teal);color:var(--black);padding:14px 32px;border-radius:var(--r-sm);font-size:15px;font-weight:600;border:none;transition:all .2s;letter-spacing:.02em}
+.btn-teal:hover{background:var(--teal2);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--text);padding:14px 32px;border-radius:var(--r-sm);font-size:15px;font-weight:500;border:1px solid var(--border2);transition:all .2s}
+.btn-outline:hover{background:var(--teal-bg);border-color:var(--teal)}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:60px;padding-top:40px;border-top:1px solid var(--border)}
+.hero-stat-val{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--teal);letter-spacing:.04em;line-height:1}
+.hero-stat-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.07em}
+
+/* SECTIONS */
+.section{padding:100px 5%}
+.section-dark{background:var(--dark)}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin-bottom:14px}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6vw,72px);letter-spacing:.04em;line-height:1;color:var(--text);margin-bottom:20px}
+.section-sub{font-size:16px;color:var(--muted);max-width:560px;line-height:1.7;font-weight:300}
+
+/* SERVICES GRID */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:56px}
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:all .2s;position:relative;overflow:hidden}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),transparent);opacity:0;transition:opacity .2s}
+.svc-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+.svc-card:hover::before{opacity:1}
+.svc-icon{width:44px;height:44px;background:var(--teal-bg);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.svc-icon svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.8}
+.svc-name{font-size:17px;font-weight:600;color:var(--text);margin-bottom:8px}
+.svc-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.svc-price{font-family:'DM Mono',monospace;font-size:20px;color:var(--teal);font-weight:500}
+.svc-price-from{font-size:11px;color:var(--muted);margin-right:4px;font-family:'DM Sans',sans-serif}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.about-img-wrap{position:relative}
+.about-img-placeholder{aspect-ratio:4/5;background:var(--card);border-radius:var(--r);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.about-img-placeholder::after{content:'C';font-family:'Bebas Neue',sans-serif;font-size:200px;color:rgba(61,184,200,0.06);position:absolute}
+.about-tag{position:absolute;bottom:24px;left:24px;background:rgba(7,8,10,0.9);border:1px solid var(--border2);border-radius:var(--r-sm);padding:12px 18px;backdrop-filter:blur(10px)}
+.about-tag-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--teal);line-height:1}
+.about-tag-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.about-text p{color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:16px;font-size:15px}
+.about-features{display:flex;flex-direction:column;gap:14px;margin-top:32px}
+.about-feature{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+.about-feature-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+
+/* BOOKING SECTION */
+.booking-wrap{max-width:680px;margin:60px auto 0}
+.booking-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:40px}
+.booking-steps{display:flex;gap:0;margin-bottom:36px;border-bottom:1px solid var(--border);padding-bottom:0}
+.bstep{flex:1;text-align:center;padding-bottom:14px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:default;transition:all .2s}
+.bstep.active{color:var(--teal);border-bottom-color:var(--teal)}
+.bstep.done{color:var(--muted);border-bottom-color:var(--subtle)}
+.bstep-num{display:block;font-family:'Bebas Neue',sans-serif;font-size:22px;color:inherit;margin-bottom:2px}
+
+/* FORM ELEMENTS */
+.field{margin-bottom:18px}
+.field label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:7px}
+.pub-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.pub-input:focus{border-color:var(--teal)}
+.pub-input::placeholder{color:var(--subtle)}
+select.pub-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9099' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select.pub-input option{background:var(--card2)}
+textarea.pub-input{min-height:100px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* SERVICE SELECTOR (booking) */
+.svc-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.svc-opt{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;cursor:pointer;transition:all .15s;user-select:none}
+.svc-opt:active{transform:scale(.97)}
+.svc-opt.selected{border-color:var(--teal);background:var(--teal-bg)}
+.svc-opt-name{font-size:13px;font-weight:500;color:var(--text)}
+.svc-opt-price{font-size:12px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.svc-opt.selected .svc-opt-price{color:var(--teal)}
+.total-line{display:flex;justify-content:space-between;align-items:center;background:var(--card2);border-radius:var(--r-sm);padding:14px 16px;margin-top:4px}
+.total-line-label{font-size:13px;color:var(--muted)}
+.total-line-val{font-family:'DM Mono',monospace;font-size:22px;color:var(--teal);font-weight:500}
+
+/* BOOKING BUTTONS */
+.pub-btn{width:100%;padding:14px;border-radius:var(--r-sm);font-size:15px;font-weight:600;border:none;transition:all .2s;margin-top:8px;letter-spacing:.02em}
+.pub-btn-primary{background:var(--teal);color:var(--black)}
+.pub-btn-primary:hover{background:var(--teal2)}
+.pub-btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.pub-btn-ghost:hover{background:var(--teal-bg)}
+.pub-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* SUCCESS STATE */
+.booking-success{text-align:center;padding:20px 0}
+.success-icon{width:64px;height:64px;background:rgba(62,207,142,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;border:2px solid var(--success)}
+.success-icon svg{width:28px;height:28px;stroke:var(--success);fill:none;stroke-width:2.5}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:60px;align-items:start}
+.contact-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}
+.contact-icon{width:42px;height:42px;background:var(--teal-bg);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-icon svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-width:1.8}
+.contact-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}
+.contact-val{font-size:15px;color:var(--text);font-weight:500}
+
+/* FOOTER */
+.pub-footer{background:var(--dark);border-top:1px solid var(--border);padding:50px 5% 30px;display:flex;flex-direction:column;gap:24px;align-items:center;text-align:center}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em}
+.footer-logo span{color:var(--teal)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .2s}
+.footer-links a:hover{color:var(--teal)}
+.footer-copy{font-size:12px;color:var(--subtle)}
+
+/* MOBILE NAV */
+.mob-menu-btn{display:none;background:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--muted)}
+.mob-menu{display:none;position:fixed;inset:0;background:rgba(7,8,10,.97);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.mob-menu.open{display:flex}
+.mob-menu a,.mob-menu button{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--text);letter-spacing:.06em;background:none;border:none;cursor:pointer}
+.mob-menu a:hover,.mob-menu button:hover{color:var(--teal)}
+.mob-close{position:absolute;top:24px;right:24px;background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── CRM APP ── */
+.crm-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px}
+.crm-page{display:none;padding:16px}
+.crm-page.active{display:block;animation:fadeUp .18s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CRM NAV */
+.crm-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 4px;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+.cnav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;color:var(--subtle);font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;border:none;background:none;font-family:'DM Sans',sans-serif;min-width:52px}
+.cnav-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cnav-btn.active{color:var(--teal)}
+.cnav-btn.active svg{stroke:var(--teal)}
+
+/* CRM HEADER */
+.crm-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;margin-bottom:4px}
+.crm-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em}
+.crm-logo span{color:var(--teal)}
+.crm-user-pill{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 5px;cursor:pointer}
+.crm-user-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;color:white;flex-shrink:0}
+
+/* CRM CARDS */
+.c-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.c-card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.c-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CRM METRICS */
+.crm-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.crm-metric{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.crm-metric-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--teal);line-height:1;letter-spacing:.02em}
+.crm-metric-label{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.07em}
+
+/* JOB CARDS */
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;display:flex;gap:12px;cursor:pointer;transition:border-color .15s}
+.job-card:active{border-color:var(--border2)}
+.job-avatar{width:42px;height:42px;border-radius:50%;background:var(--teal-bg);border:1.5px solid var(--teal2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--teal);flex-shrink:0}
+.job-info{flex:1;min-width:0}
+.job-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-detail{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.job-amount{font-family:'DM Mono',monospace;font-size:14px;font-weight:500}
+
+/* STATUS PILLS */
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.pill-pending{background:rgba(240,160,48,.1);color:var(--warn);border:1px solid rgba(240,160,48,.2)}
+.pill-scheduled{background:var(--teal-bg);color:var(--teal);border:1px solid var(--border2)}
+.pill-done{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.pill-paid{background:rgba(62,207,142,.1);color:var(--success);border:1px solid rgba(62,207,142,.2)}
+.pill-new{background:rgba(255,96,96,.1);color:var(--danger);border:1px solid rgba(255,96,96,.2)}
+
+/* CRM FORM */
+.cf{margin-bottom:12px}
+.cf label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:5px}
+.ci{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.ci:focus{border-color:var(--teal)}
+select.ci{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9099' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select.ci option{background:var(--card2)}
+textarea.ci{min-height:80px;resize:vertical}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* BUTTONS */
+.cb{display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;border-radius:var(--r-sm);font-size:14px;font-weight:600;padding:12px 18px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap;width:100%}
+.cb:active{transform:scale(.97)}
+.cb-primary{background:var(--teal);color:var(--black);border-color:transparent}
+.cb-primary:hover{background:var(--teal2)}
+.cb-ghost{border-color:var(--border2);color:var(--text)}
+.cb-danger{border-color:rgba(255,96,96,.3);color:var(--danger)}
+.cb-sm{padding:8px 12px;font-size:12px;width:auto}
+.cb-row{display:flex;gap:8px;margin-top:14px}
+.cb-row .cb{flex:1}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px;padding-bottom:calc(20px + env(safe-area-inset-bottom));width:100%;max-height:92vh;overflow-y:auto;transform:translateY(20px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--card2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:16px}
+
+/* TABS */
+.ctabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.ctabs::-webkit-scrollbar{display:none}
+.ctab{padding:8px 14px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.ctab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* SECTION HEAD */
+.sh{display:flex;align-items:center;justify-content:space-between;margin:16px 0 10px}
+.sh-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap .ci{padding-left:38px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.8;pointer-events:none}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge-ok{background:rgba(62,207,142,.1);color:var(--success)}
+.badge-err{background:rgba(255,96,96,.1);color:var(--danger)}
+.badge-info{background:var(--teal-bg);color:var(--teal)}
+
+/* STATUS SELECT */
+.ss{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ss-opt{padding:7px 12px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s;color:var(--muted);background:transparent;font-family:'DM Sans',sans-serif}
+.ss-opt.ap{border-color:var(--warn);color:var(--warn);background:rgba(240,160,48,.08)}
+.ss-opt.as{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+.ss-opt.ad{border-color:var(--subtle);color:var(--text);background:var(--card2)}
+.ss-opt.ai{border-color:var(--success);color:var(--success);background:rgba(62,207,142,.08)}
+
+/* SPINNER */
+.spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LIVE DOT */
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;display:inline-block}
+
+/* CUSTOMER CARDS */
+.cust-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.cust-card:active{border-color:var(--border2)}
+.cust-stats{display:flex;gap:0;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.cust-stat{flex:1;text-align:center}
+.cust-stat-val{font-family:'DM Mono',monospace;font-size:14px;color:var(--teal)}
+.cust-stat-label{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px}
+.empty svg{width:48px;height:48px;stroke:var(--subtle);fill:none;stroke-width:1.5;margin:0 auto 12px;display:block}
+.empty p{color:var(--muted);font-size:13px}
+
+/* ACTIVITY */
+.act-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.act-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px}
+
+/* NOTIFICATION BANNER */
+.notif-banner{position:fixed;top:0;left:0;right:0;z-index:9999;padding:14px 20px;background:var(--success);color:var(--black);font-weight:600;font-size:14px;text-align:center;transform:translateY(-100%);transition:transform .3s}
+.notif-banner.show{transform:translateY(0)}
+
+/* PRINT */
+@media print{
+  #public-site,#crm-app,#login-gate,#crm-loading{display:none!important}
+  #inv-print-area{display:block!important}
+}
+#inv-print-area{display:none;font-family:'DM Sans',sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .mob-menu-btn{display:block}
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .hero-stats{gap:24px}
+  .booking-card{padding:24px 18px}
+}
+@media(max-width:480px){
+  .svc-select-grid{grid-template-columns:1fr}
+  .r2{grid-template-columns:1fr}
+}
+
+/* LOGIN GATE */
+.login-gate-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:32px;width:100%;max-width:380px}
+.login-gate-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;text-align:center;margin-bottom:4px}
+.login-gate-logo span{color:var(--teal)}
+.login-gate-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;text-transform:uppercase;letter-spacing:.07em}
+
+/* EMP COLORS */
+.ec0{background:linear-gradient(135deg,#3db8c8,#2a8595)}
+.ec1{background:linear-gradient(135deg,#f0a030,#c07820)}
+.ec2{background:linear-gradient(135deg,#3ecf8e,#2a9060)}
+.ec3{background:linear-gradient(135deg,#8899ff,#5566cc)}
+.ec4{background:linear-gradient(135deg,#ff6b6b,#cc4444)}
+</style>
+</head>
+<body>
+
+<div id="notif-banner" class="notif-banner"></div>
+<div id="inv-print-area"></div>
+
+<!-- ════════════════════════════════════════
+     PUBLIC WEBSITE
+════════════════════════════════════════ -->
+<div id="public-site">
+
+  <!-- NAV -->
+  <nav class="pub-nav">
+    <div class="pub-logo">C The <span>Details</span></div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#booking">Book Now</a>
+      <a href="#contact">Contact</a>
+      <button class="nav-emp-link" onclick="showLoginGate()">Staff Login</button>
+    </div>
+    <button class="mob-menu-btn" onclick="document.getElementById('mob-nav').classList.add('open')">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 1h18M0 7h18M0 13h18"/></svg>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mob-menu" id="mob-nav">
+    <button class="mob-close" onclick="document.getElementById('mob-nav').classList.remove('open')">✕</button>
+    <a href="#services" onclick="document.getElementById('mob-nav').classList.remove('open')">Services</a>
+    <a href="#about" onclick="document.getElementById('mob-nav').classList.remove('open')">About</a>
+    <a href="#booking" onclick="document.getElementById('mob-nav').classList.remove('open')">Book Now</a>
+    <a href="#contact" onclick="document.getElementById('mob-nav').classList.remove('open')">Contact</a>
+    <button onclick="document.getElementById('mob-nav').classList.remove('open');showLoginGate()">Staff Login</button>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><div class="hero-badge-dot"></div>Columbus, Ohio</div>
+      <h1 class="hero-h1">C THE<br><span>DETAILS</span></h1>
+      <p class="hero-sub">Professional car wash & detailing that brings the shine to you. Mobile service across Columbus — book online in seconds.</p>
+      <div class="hero-btns">
+        <button class="btn-teal" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Book Appointment</button>
+        <button class="btn-outline" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Services</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-val">100%</div><div class="hero-stat-label">Satisfaction</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">5★</div><div class="hero-stat-label">Rated</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">CBus</div><div class="hero-stat-label">Columbus, OH</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section section-dark" id="services">
+    <div class="reveal">
+      <div class="section-label">What we offer</div>
+      <div class="section-title">OUR SERVICES</div>
+      <div class="section-sub">Every service is done by hand with professional-grade products. Your car deserves the best.</div>
+    </div>
+    <div class="services-grid reveal">
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4"/></svg></div>
+        <div class="svc-name">Exterior Wash & Dry</div>
+        <div class="svc-desc">Full hand wash, rinse, and dry. Leaves your exterior spotless and streak-free.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$50</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
+        <div class="svc-name">Full Interior Detail</div>
+        <div class="svc-desc">Deep vacuum, wipe-down, windows, and steam clean. Your interior like new.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$120</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="M2 12c0 4.42 4.48 8 10 8s10-3.58 10-8"/></svg></div>
+        <div class="svc-name">Hand Wax</div>
+        <div class="svc-desc">Professional carnauba wax applied by hand. Protects paint and adds deep gloss.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$100</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <div class="svc-name">Ceramic Coating</div>
+        <div class="svc-desc">Long-lasting nano-ceramic protection. Repels water, dirt, and UV damage for years.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$400</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <div class="svc-name">Paint Decontamination</div>
+        <div class="svc-desc">Clay bar treatment that removes embedded contaminants for a glass-smooth surface.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$80</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="svc-name">Paint Sealant</div>
+        <div class="svc-desc">Synthetic polymer sealant for 6–12 months of paint protection and shine.</div>
+        <div class="svc-price"><span class="svc-price-from">from</span>$130</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        <div class="about-img-placeholder">
+          <div class="about-tag">
+            <div class="about-tag-val">CBus</div>
+            <div class="about-tag-label">Columbus, Ohio</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="section-label">About us</div>
+        <div class="section-title">THE MAN BEHIND THE SHINE</div>
+        <div class="about-text">
+          <p>Hi, I'm Carlos Garcia — founder of C The Details. Based in Columbus, Ohio, I started this business because I believe every car deserves to look its absolute best.</p>
+          <p>We bring professional-grade detailing directly to you. Whether it's a quick wash or a full ceramic coating, every job gets the same attention to detail and care.</p>
+        </div>
+        <div class="about-features">
+          <div class="about-feature"><div class="about-feature-dot"></div>Mobile service — we come to you</div>
+          <div class="about-feature"><div class="about-feature-dot"></div>Professional-grade products only</div>
+          <div class="about-feature"><div class="about-feature-dot"></div>100% satisfaction guaranteed</div>
+          <div class="about-feature"><div class="about-feature-dot"></div>Serving all of Columbus & surrounding areas</div>
+        </div>
+        <button class="btn-teal" style="margin-top:32px;width:auto;padding:13px 28px" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Book with Carlos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="section section-dark" id="booking">
+    <div style="text-align:center" class="reveal">
+      <div class="section-label">Online booking</div>
+      <div class="section-title">BOOK YOUR APPOINTMENT</div>
+      <div class="section-sub" style="margin:0 auto">Pick your services, choose a date, and we'll confirm right away. No phone call needed.</div>
+    </div>
+    <div class="booking-wrap reveal">
+      <div class="booking-card">
+        <div class="booking-steps">
+          <div class="bstep active" id="bstep-0"><span class="bstep-num">01</span>Your Info</div>
+          <div class="bstep" id="bstep-1"><span class="bstep-num">02</span>Services</div>
+          <div class="bstep" id="bstep-2"><span class="bstep-num">03</span>Schedule</div>
+        </div>
+
+        <!-- Step 0 -->
+        <div id="bpane-0">
+          <div class="row2">
+            <div class="field"><label>First name *</label><input class="pub-input" id="b-fname" placeholder="Jane"/></div>
+            <div class="field"><label>Last name</label><input class="pub-input" id="b-lname" placeholder="Smith"/></div>
+          </div>
+          <div class="field"><label>Phone *</label><input class="pub-input" id="b-phone" type="tel" placeholder="(614) 555-0100"/></div>
+          <div class="field"><label>Email</label><input class="pub-input" id="b-email" type="email" placeholder="jane@email.com"/></div>
+          <div class="row2">
+            <div class="field"><label>Vehicle year</label><input class="pub-input" id="b-yr" placeholder="2023"/></div>
+            <div class="field"><label>Make & model *</label><input class="pub-input" id="b-model" placeholder="BMW 3 Series"/></div>
+          </div>
+          <div class="field"><label>Color</label><input class="pub-input" id="b-color" placeholder="Midnight Black"/></div>
+          <button class="pub-btn pub-btn-primary" onclick="bNext(1)">Continue →</button>
+        </div>
+
+        <!-- Step 1 -->
+        <div id="bpane-1" style="display:none">
+          <div class="field"><label>Select services (choose all that apply)</label>
+            <div class="svc-select-grid" id="b-svc-grid"></div>
+          </div>
+          <div class="total-line">
+            <span class="total-line-label">Estimated total</span>
+            <span class="total-line-val" id="b-total">$0</span>
+          </div>
+          <div class="field" style="margin-top:16px"><label>Vehicle condition</label>
+            <select class="pub-input" id="b-cond">
+              <option value="">Select...</option>
+              <option>Excellent – minor dirt</option>
+              <option>Good – light swirls/stains</option>
+              <option>Fair – moderate contamination</option>
+              <option>Poor – heavy neglect</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="pub-btn pub-btn-ghost" style="flex:1" onclick="bNext(0)">← Back</button>
+            <button class="pub-btn pub-btn-primary" style="flex:2" onclick="bNext(2)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="bpane-2" style="display:none">
+          <div class="row2">
+            <div class="field"><label>Preferred date *</label><input class="pub-input" type="date" id="b-date"/></div>
+            <div class="field"><label>Preferred time</label>
+              <select class="pub-input" id="b-time">
+                <option value="">Any time</option>
+                <option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option>
+                <option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option>
+                <option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Service location</label>
+            <select class="pub-input" id="b-loc">
+              <option value="mobile">My location (mobile service)</option>
+              <option value="shop">Your shop</option>
+            </select>
+          </div>
+          <div class="field"><label>Address / notes</label><textarea class="pub-input" id="b-notes" placeholder="Your address or any special requests..."></textarea></div>
+          <div style="display:flex;gap:10px">
+            <button class="pub-btn pub-btn-ghost" style="flex:1" onclick="bNext(1)">← Back</button>
+            <button class="pub-btn pub-btn-primary" style="flex:2" id="b-submit-btn" onclick="submitBooking()">Confirm Booking ✓</button>
+          </div>
+          <div id="b-error" style="color:var(--danger);font-size:13px;margin-top:10px;display:none"></div>
+        </div>
+
+        <!-- Success -->
+        <div id="bpane-success" style="display:none">
+          <div class="booking-success">
+            <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg></div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;margin-bottom:8px">Booking Confirmed!</div>
+            <p style="color:var(--muted);font-size:14px;line-height:1.7">We've received your appointment request and will reach out to confirm details. Carlos will be in touch at <strong id="b-confirm-phone"></strong>.</p>
+            <div style="margin-top:24px;background:var(--card2);border-radius:var(--r-sm);padding:16px;text-align:left">
+              <div id="b-confirm-summary" style="font-size:13px;color:var(--muted);line-height:1.8"></div>
+            </div>
+            <button class="pub-btn pub-btn-primary" style="margin-top:20px" onclick="resetBooking()">Book Another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="reveal">
+      <div class="section-label">Get in touch</div>
+      <div class="section-title">CONTACT US</div>
+    </div>
+    <div class="contact-grid reveal">
+      <div>
+        <div class="contact-item">
+          <div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.86a16 16 0 0 0 5.72 5.72l.96-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16l.19.92z"/></svg></div>
+          <div><div class="contact-label">Phone</div><div class="contact-val">614-905-8789</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><div class="contact-label">Email</div><div class="contact-val">CTheDetails@gmail.com</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+          <div><div class="contact-label">Instagram</div><div class="contact-val">@C.The.Details</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="contact-label">Location</div><div class="contact-val">Columbus, Ohio</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:32px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;margin-bottom:20px">QUICK MESSAGE</div>
+          <div class="field"><label>Name</label><input class="pub-input" id="msg-name" placeholder="Your name"/></div>
+          <div class="field"><label>Message</label><textarea class="pub-input" id="msg-body" placeholder="Questions about pricing, availability, etc..."></textarea></div>
+          <button class="btn-teal" style="width:100%;padding:13px" onclick="sendMessage()">Send Message</button>
+          <div id="msg-status" style="margin-top:10px;font-size:13px;text-align:center"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="pub-footer">
+    <div class="footer-logo">C The <span>Details</span></div>
+    <div class="footer-links">
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#booking">Book Now</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 C The Details — Car Wash & Cleaning · Columbus, Ohio · 614-905-8789</div>
+  </footer>
+
+</div><!-- /public-site -->
+
+<!-- ════════════════════════════════════════
+     LOGIN GATE
+════════════════════════════════════════ -->
+<div id="login-gate">
+  <div class="login-gate-card">
+    <div class="login-gate-logo">C The <span>Details</span></div>
+    <div class="login-gate-sub">Staff Access</div>
+    <div class="cf"><label>Select your name</label>
+      <div id="login-emp-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px"></div>
+    </div>
+    <div class="cf"><label>Staff password</label>
+      <input class="ci" type="password" id="login-pass" placeholder="Enter password..." onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="cb cb-primary" onclick="doLogin()">Enter CRM →</button>
+    <div id="login-err" style="color:var(--danger);font-size:12px;margin-top:10px;text-align:center"></div>
+    <button onclick="hideLoginGate()" style="display:block;width:100%;margin-top:12px;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:8px">← Back to website</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     CRM LOADING
+════════════════════════════════════════ -->
+<div id="crm-loading">
+  <div style="text-align:center">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.06em;margin-bottom:20px">C The <span style="color:var(--teal)">Details</span></div>
+    <div class="spinner" style="margin:0 auto 16px"></div>
+    <div id="crm-load-msg" style="color:var(--muted);font-size:13px">Connecting...</div>
+    <div id="crm-load-err" style="display:none;margin-top:20px;max-width:300px;text-align:center">
+      <div style="color:var(--danger);margin-bottom:12px;font-size:13px;line-height:1.6" id="crm-err-msg"></div>
+      <button onclick="location.reload()" class="cb cb-primary" style="width:auto;padding:10px 24px">Retry</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     CRM APP
+════════════════════════════════════════ -->
+<div id="crm-app">
+
+  <div class="crm-header">
+    <div class="crm-logo">C The <span>Details</span> <span style="font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;margin-left:6px;vertical-align:middle"><span class="live-dot"></span> Live</span></div>
+    <div class="crm-user-pill" onclick="logoutCRM()" id="crm-user-pill">
+      <div class="crm-user-dot ec0" id="crm-user-dot"></div>
+      <span style="font-size:12px;font-weight:500" id="crm-user-name">—</span>
+    </div>
+  </div>
+
+  <div class="crm-content">
+
+    <!-- DASHBOARD -->
+    <div class="crm-page active" id="cp-home">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em">Dashboard</div>
+          <div style="font-size:12px;color:var(--muted)" id="crm-date"></div>
+        </div>
+        <button class="cb cb-primary cb-sm" onclick="openModal('m-new-job')" style="width:auto">+ Job</button>
+      </div>
+      <div class="crm-metrics">
+        <div class="crm-metric"><div class="crm-metric-val" id="m-rev">$0</div><div class="crm-metric-label">This month</div></div>
+        <div class="crm-metric"><div class="crm-metric-val" id="m-jobs">0</div><div class="crm-metric-label">Total jobs</div></div>
+        <div class="crm-metric"><div class="crm-metric-val" id="m-new">0</div><div class="crm-metric-label">New bookings</div></div>
+        <div class="crm-metric"><div class="crm-metric-val" id="m-pend">0</div><div class="crm-metric-label">Pending</div></div>
+      </div>
+      <div class="sh"><div class="sh-title">New online bookings</div></div>
+      <div id="new-bookings-list"></div>
+      <div class="sh"><div class="sh-title">Today's jobs</div></div>
+      <div id="today-list"></div>
+      <div class="sh"><div class="sh-title">Recent activity</div></div>
+      <div id="home-activity"></div>
+    </div>
+
+    <!-- JOBS -->
+    <div class="crm-page" id="cp-jobs">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em">Pipeline</div>
+        <button class="cb cb-primary cb-sm" onclick="openModal('m-new-job')" style="width:auto">+ Job</button>
+      </div>
+      <div class="ctabs" id="pipeline-tabs">
+        <button class="ctab active" onclick="filterJobs('all',this)">All</button>
+        <button class="ctab" onclick="filterJobs('new',this)">New</button>
+        <button class="ctab" onclick="filterJobs('pending',this)">Pending</button>
+        <button class="ctab" onclick="filterJobs('scheduled',this)">Scheduled</button>
+        <button class="ctab" onclick="filterJobs('done',this)">Done</button>
+        <button class="ctab" onclick="filterJobs('paid',this)">Paid</button>
+      </div>
+      <div id="jobs-list"></div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="crm-page" id="cp-clients">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em">Clients</div>
+        <button class="cb cb-primary cb-sm" onclick="openModal('m-new-client')" style="width:auto">+ Add</button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5l3 3" stroke-linecap="round"/></svg>
+        <input class="ci" id="client-search" placeholder="Search clients..." oninput="renderClients()"/>
+      </div>
+      <div id="clients-list"></div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="crm-page" id="cp-team">
+      <div style="margin-bottom:16px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em">Team</div>
+        <div style="font-size:12px;color:var(--muted)">Performance by employee</div>
+      </div>
+      <div id="team-cards"></div>
+      <div class="sh"><div class="sh-title">Activity feed</div></div>
+      <div id="team-activity"></div>
+    </div>
+
+    <!-- MORE -->
+    <div class="crm-page" id="cp-more">
+      <div style="margin-bottom:16px;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em">Settings</div>
+      <div class="c-card">
+        <div class="c-card-title">Team members</div>
+        <div id="team-mgmt"></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input class="ci" id="new-emp-name" placeholder="New employee name" style="flex:1"/>
+          <select class="ci" id="new-emp-role" style="width:110px">
+            <option value="employee">Employee</option>
+            <option value="owner">Owner</option>
+          </select>
+        </div>
+        <button class="cb cb-ghost" style="margin-top:8px" onclick="addEmployee()">Add Employee</button>
+      </div>
+      <div class="c-card">
+        <div class="c-card-title">Staff password</div>
+        <div class="cf"><label>Change password</label><input class="ci" type="password" id="new-pass" placeholder="New password..."/></div>
+        <button class="cb cb-ghost" onclick="savePass()">Save Password</button>
+        <div id="pass-status" style="margin-top:8px;font-size:12px"></div>
+      </div>
+      <div class="c-card">
+        <div class="c-card-title">Google Sheets export</div>
+        <div class="cf"><label>Sheet tab</label><input class="ci" id="s-tab" value="Quotes Log"/></div>
+        <div id="sheets-auth-area">
+          <div id="sheets-auth-status" style="font-size:12px;color:var(--muted);margin-bottom:8px">Not connected</div>
+          <button class="cb cb-ghost cb-sm" onclick="handleSheetsAuth()" style="width:auto">Connect Google</button>
+        </div>
+        <button class="cb cb-ghost" style="margin-top:8px" onclick="exportToSheets()">Export all jobs ↗</button>
+      </div>
+      <div class="c-card">
+        <div class="c-card-title" style="color:var(--danger)">Danger zone</div>
+        <button class="cb cb-danger" onclick="if(confirm('Exit CRM?'))logoutCRM()">Exit to website</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CRM BOTTOM NAV -->
+  <nav class="crm-nav">
+    <button class="cnav-btn active" onclick="cnavTo('home',this)">
+      <svg viewBox="0 0 20 20"><path d="M3 10L10 3l7 7"/><path d="M5 8.5V17h4v-4h2v4h4V8.5"/></svg>Home
+    </button>
+    <button class="cnav-btn" onclick="cnavTo('jobs',this)">
+      <svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M7 4V2M13 4V2M3 9h14"/></svg>Jobs
+    </button>
+    <button class="cnav-btn" onclick="cnavTo('clients',this)">
+      <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5"/><path d="M3 18c0-3.87 3.13-7 7-7s7 3.13 7 7"/></svg>Clients
+    </button>
+    <button class="cnav-btn" onclick="cnavTo('team',this)">
+      <svg viewBox="0 0 20 20"><circle cx="7" cy="8" r="3"/><circle cx="14" cy="8" r="2.5"/><path d="M1 18c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M14 12c2.21 0 4 1.79 4 4"/></svg>Team
+    </button>
+    <button class="cnav-btn" onclick="cnavTo('more',this)">
+      <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>More
+    </button>
+  </nav>
+</div>
+
+<!-- ════ MODALS ════ -->
+
+<!-- NEW JOB -->
+<div class="modal-overlay" id="m-new-job" onclick="closeModalOut(event,'m-new-job')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Job</div>
+    <div class="cf"><label>Client</label><select class="ci" id="j-client" onchange="prefillClient()"><option value="">+ New client</option></select></div>
+    <div id="j-new-fields">
+      <div class="r2">
+        <div class="cf"><label>First name *</label><input class="ci" id="j-fname" placeholder="Jane"/></div>
+        <div class="cf"><label>Last name</label><input class="ci" id="j-lname" placeholder="Smith"/></div>
+      </div>
+      <div class="cf"><label>Phone</label><input class="ci" id="j-phone" placeholder="(614) 555-0100" type="tel"/></div>
+    </div>
+    <div class="r2">
+      <div class="cf"><label>Year</label><input class="ci" id="j-yr" placeholder="2023"/></div>
+      <div class="cf"><label>Make & model</label><input class="ci" id="j-model" placeholder="BMW 3 Series"/></div>
+    </div>
+    <div class="r2">
+      <div class="cf"><label>Color</label><input class="ci" id="j-color" placeholder="Black"/></div>
+      <div class="cf"><label>Condition</label><select class="ci" id="j-cond"><option value="">—</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select></div>
+    </div>
+    <div class="cf"><label>Services</label><div id="j-svc-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px"></div></div>
+    <div class="cf" style="margin-top:4px"><label>Add-ons</label><div id="j-addon-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px"></div></div>
+    <div style="background:var(--card2);border-radius:var(--r-sm);padding:10px 13px;display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+      <span style="font-size:12px;color:var(--muted)">Estimated total</span>
+      <span id="j-total" style="font-family:'DM Mono',monospace;font-size:20px;color:var(--teal);font-weight:500">$0</span>
+    </div>
+    <div class="r2">
+      <div class="cf"><label>Date</label><input type="date" class="ci" id="j-date"/></div>
+      <div class="cf"><label>Status</label><select class="ci" id="j-status"><option value="pending">Pending</option><option value="scheduled">Scheduled</option><option value="done">Done</option><option value="paid">Paid</option></select></div>
+    </div>
+    <div class="r2">
+      <div class="cf"><label>Assigned to</label><select class="ci" id="j-emp"></select></div>
+      <div class="cf"><label>Deposit ($)</label><input type="number" class="ci" id="j-dep" placeholder="0" min="0"/></div>
+    </div>
+    <div class="cf"><label>Notes</label><textarea class="ci" id="j-notes" placeholder="Special requests..."></textarea></div>
+    <div class="cb-row">
+      <button class="cb cb-ghost" onclick="closeModal('m-new-job')">Cancel</button>
+      <button class="cb cb-primary" id="j-save-btn" onclick="saveJob()">Save Job</button>
+    </div>
+    <div id="j-status-msg" style="margin-top:8px;min-height:20px"></div>
+  </div>
+</div>
+
+<!-- JOB DETAIL -->
+<div class="modal-overlay" id="m-job-detail" onclick="closeModalOut(event,'m-job-detail')">
+  <div class="modal"><div class="modal-handle"></div><div id="job-detail-body"></div></div>
+</div>
+
+<!-- NEW CLIENT -->
+<div class="modal-overlay" id="m-new-client" onclick="closeModalOut(event,'m-new-client')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Client</div>
+    <div class="r2">
+      <div class="cf"><label>First name *</label><input class="ci" id="c-fname" placeholder="Jane"/></div>
+      <div class="cf"><label>Last name</label><input class="ci" id="c-lname" placeholder="Smith"/></div>
+    </div>
+    <div class="cf"><label>Phone</label><input class="ci" id="c-phone" placeholder="(614) 555-0100" type="tel"/></div>
+    <div class="cf"><label>Email</label><input class="ci" id="c-email" placeholder="jane@email.com" type="email"/></div>
+    <div class="cf"><label>Vehicle</label><input class="ci" id="c-vehicle" placeholder="2023 Black BMW 3 Series"/></div>
+    <div class="cf"><label>Notes</label><textarea class="ci" id="c-notes" placeholder="Preferences, concerns..."></textarea></div>
+    <div class="cb-row">
+      <button class="cb cb-ghost" onclick="closeModal('m-new-client')">Cancel</button>
+      <button class="cb cb-primary" onclick="saveClient()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT DETAIL -->
+<div class="modal-overlay" id="m-client-detail" onclick="closeModalOut(event,'m-client-detail')">
+  <div class="modal"><div class="modal-handle"></div><div id="client-detail-body"></div></div>
+</div>
+
+<!-- INVOICE -->
+<div class="modal-overlay" id="m-invoice" onclick="closeModalOut(event,'m-invoice')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Invoice</div>
+    <div id="invoice-preview-body"></div>
+    <div class="r2" style="margin-top:8px">
+      <div class="cf"><label>Discount ($)</label><input type="number" class="ci" id="inv-disc" placeholder="0" oninput="updateInvTotal()"/></div>
+      <div class="cf"><label>Tax (%)</label><input type="number" class="ci" id="inv-tax" placeholder="0" step="0.1" oninput="updateInvTotal()"/></div>
+    </div>
+    <div style="background:var(--card2);border-radius:var(--r-sm);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-size:12px;color:var(--muted)">Invoice total</span>
+      <span id="inv-final" style="font-family:'DM Mono',monospace;font-size:22px;color:var(--teal)">$0</span>
+    </div>
+    <div class="cb-row">
+      <button class="cb cb-ghost" onclick="printInv()">Print</button>
+      <button class="cb cb-ghost" onclick="emailInv()">Email ↗</button>
+      <button class="cb cb-primary" onclick="markPaid()">Mark Paid ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FIREBASE + APP LOGIC
+════════════════════════════════════════ -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+// ── FIREBASE INIT ──
+firebase.initializeApp({
+  apiKey:"AIzaSyD--VAfvrC0YeXW2LGG9teUqasI9bvzLWI",
+  authDomain:"cthedetails-a5af3.firebaseapp.com",
+  projectId:"cthedetails-a5af3",
+  storageBucket:"cthedetails-a5af3.firebasestorage.app",
+  messagingSenderId:"366628934798",
+  appId:"1:366628934798:web:dafd084b26935d5156a5df"
+});
+const db = firebase.firestore();
+
+// ── STATE ──
+const S = { jobs:[], clients:[], team:[], activity:[], settings:{} };
+let currentUser = null;
+let jobFilter = 'all';
+let invoiceJobId = null;
+let gToken = null;
+const STAFF_PASS_KEY = 'ctd_staff_pass';
+const EC = ['ec0','ec1','ec2','ec3','ec4'];
+
+// ── SERVICES ──
+const SVCS = [
+  {id:'wash',name:'Exterior Wash',price:50},
+  {id:'vac',name:'Interior Vacuum',price:40},
+  {id:'full',name:'Full Interior Detail',price:120},
+  {id:'decon',name:'Paint Decontamination',price:80},
+  {id:'clay',name:'Clay Bar',price:90},
+  {id:'wax',name:'Hand Wax',price:100},
+  {id:'sealant',name:'Paint Sealant',price:130},
+  {id:'ceramic',name:'Ceramic Coating',price:400},
+  {id:'headlight',name:'Headlight Restore',price:75},
+  {id:'engine',name:'Engine Bay Clean',price:80},
+  {id:'odor',name:'Odor Elimination',price:60},
+  {id:'tire',name:'Tire & Trim',price:35},
+];
+const ADDONS = ['Pet hair','Leather care','Stain treatment','Scratch touch-up'];
+
+// ── HELPERS ──
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function sv(id,v){const e=document.getElementById(id);if(e)e.value=v;}
+function fmt(n){return'$'+Math.round(n||0).toLocaleString();}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function initials(name){return(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function empColor(name){const m=S.team.find(t=>t.name===name);return EC[((m?.colorIdx)||0)%5];}
+function notify(msg){
+  const b=document.getElementById('notif-banner');
+  b.textContent=msg;b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'),3500);
+}
+function showStatus(id,msg,type){
+  const e=document.getElementById(id);
+  if(e){e.innerHTML=`<span class="badge badge-${type}">${msg}</span>`;
+  if(type==='ok')setTimeout(()=>e.innerHTML='',3000);}
+}
+function empty(msg){return`<div class="empty"><p>${msg}</p></div>`;}
+
+// ── SCROLL REVEAL ──
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ── PUBLIC BOOKING ──
+let bSelSvc=new Set();
+let bStep=0;
+
+function buildBookingSvcGrid(){
+  const g=document.getElementById('b-svc-grid');
+  if(!g)return;
+  g.innerHTML='';
+  SVCS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='svc-opt';
+    el.innerHTML=`<div class="svc-opt-name">${s.name}</div><div class="svc-opt-price">$${s.price}</div>`;
+    el.onclick=()=>{
+      bSelSvc.has(i)?bSelSvc.delete(i):bSelSvc.add(i);
+      el.classList.toggle('selected',bSelSvc.has(i));
+      updateBTotal();
+    };
+    g.appendChild(el);
+  });
+}
+
+function updateBTotal(){
+  const t=[...bSelSvc].reduce((s,i)=>s+SVCS[i].price,0);
+  document.getElementById('b-total').textContent=fmt(t);
+}
+
+function bNext(n){
+  [0,1,2].forEach(i=>{
+    const p=document.getElementById('bpane-'+i);
+    if(p)p.style.display=i===n?'block':'none';
+    const s=document.getElementById('bstep-'+i);
+    if(s){s.classList.remove('active','done');if(i===n)s.classList.add('active');else if(i<n)s.classList.add('done');}
+  });
+  bStep=n;
+}
+
+async function submitBooking(){
+  const fn=gv('b-fname'),phone=gv('b-phone'),model=gv('b-model'),date=gv('b-date');
+  if(!fn){alert('Please enter your name.');return;}
+  if(!phone){alert('Please enter your phone number.');return;}
+  if(!model){alert('Please enter your vehicle make & model.');return;}
+  if(!date){alert('Please select a preferred date.');return;}
+  if(bSelSvc.size===0){alert('Please select at least one service.');return;}
+
+  const btn=document.getElementById('b-submit-btn');
+  btn.disabled=true;btn.textContent='Booking...';
+
+  const svcs=[...bSelSvc].map(i=>SVCS[i]);
+  const total=svcs.reduce((a,s)=>a+s.price,0);
+  const vehicle=[gv('b-yr'),gv('b-color'),model].filter(Boolean).join(' ');
+  const clientName=[fn,gv('b-lname')].filter(Boolean).join(' ');
+
+  const booking={
+    clientName, phone, email:gv('b-email'), vehicle,
+    condition:gv('b-cond'), services:svcs, addons:[], total,
+    date, time:gv('b-time'), location:gv('b-loc'), notes:gv('b-notes'),
+    status:'new', source:'online', deposit:0,
+    employeeName:'', createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try{
+    await db.collection('jobs').add(booking);
+    await db.collection('activity').add({
+      message:`New online booking from ${clientName} — ${svcs.map(s=>s.name).join(', ')}`,
+      employee:'Customer',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // Also save/update client
+    const existingSnap=await db.collection('clients').where('phone','==',phone).limit(1).get();
+    if(existingSnap.empty){
+      await db.collection('clients').add({firstName:fn,lastName:gv('b-lname'),phone,email:gv('b-email'),vehicle,notes:'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    }
+    // Show success
+    [0,1,2].forEach(i=>{const p=document.getElementById('bpane-'+i);if(p)p.style.display='none';});
+    document.getElementById('bpane-success').style.display='block';
+    document.getElementById('b-confirm-phone').textContent=phone;
+    document.getElementById('b-confirm-summary').innerHTML=
+      `<strong>Name:</strong> ${clientName}<br><strong>Vehicle:</strong> ${vehicle}<br><strong>Date:</strong> ${date}${gv('b-time')?' @ '+gv('b-time'):''}<br><strong>Services:</strong> ${svcs.map(s=>s.name).join(', ')}<br><strong>Estimated total:</strong> ${fmt(total)}`;
+  }catch(e){
+    const err=document.getElementById('b-error');
+    err.style.display='block';err.textContent='Something went wrong. Please call us at 614-905-8789.';
+    btn.disabled=false;btn.textContent='Confirm Booking ✓';
+  }
+}
+
+function resetBooking(){
+  bSelSvc.clear();
+  ['b-fname','b-lname','b-phone','b-email','b-yr','b-model','b-color','b-notes','b-date'].forEach(id=>sv(id,''));
+  document.getElementById('bpane-success').style.display='none';
+  buildBookingSvcGrid();
+  bNext(0);
+}
+
+function sendMessage(){
+  const name=gv('msg-name'),body=gv('msg-body');
+  if(!name||!body)return;
+  const sub=encodeURIComponent('Message from '+name+' via cthedetails.com');
+  const b=encodeURIComponent(body+'\n\n— '+name);
+  window.open('mailto:CTheDetails@gmail.com?subject='+sub+'&body='+b);
+  document.getElementById('msg-status').innerHTML='<span style="color:var(--success)">Opening email...</span>';
+}
+
+// ── LOGIN GATE ──
+function showLoginGate(){
+  document.getElementById('login-gate').classList.add('active');
+  buildLoginGrid();
+}
+function hideLoginGate(){
+  document.getElementById('login-gate').classList.remove('active');
+}
+function buildLoginGrid(){
+  const g=document.getElementById('login-emp-grid');
+  if(!g)return;
+  g.innerHTML='';
+  S.team.forEach((m,i)=>{
+    const ci=m.colorIdx!==undefined?m.colorIdx:(i%5);
+    const el=document.createElement('div');
+    el.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center;cursor:pointer;transition:all .15s;user-select:none';
+    el.dataset.id=m.id;
+    el.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:white" class="${EC[ci]}">${initials(m.name)}</div><div style="font-size:13px;font-weight:500;color:var(--text)">${m.name}</div><div style="font-size:11px;color:var(--muted)">${m.role}</div>`;
+    el.onclick=()=>{document.querySelectorAll('#login-emp-grid > div').forEach(b=>{b.style.borderColor='var(--border)';b.style.background='var(--card2)';});el.style.borderColor='var(--teal)';el.style.background='var(--teal-bg)';};
+    g.appendChild(el);
+  });
+}
+
+function doLogin(){
+  const sel=document.querySelector('#login-emp-grid > div[style*="teal"]');
+  if(!sel){document.getElementById('login-err').textContent='Please select your name';return;}
+  const pass=gv('login-pass');
+  const stored=localStorage.getItem(STAFF_PASS_KEY)||'cthedetails2026';
+  if(pass!==stored){document.getElementById('login-err').textContent='Wrong password';return;}
+  const member=S.team.find(m=>m.id===sel.dataset.id);
+  if(!member)return;
+  currentUser=member;
+  hideLoginGate();
+  launchCRM();
+}
+
+// ── CRM LAUNCH ──
+function launchCRM(){
+  document.getElementById('public-site').style.display='none';
+  document.getElementById('crm-loading').classList.add('active');
+  document.getElementById('crm-load-msg').textContent='Connecting to database...';
+
+  const timeout=setTimeout(()=>{
+    document.getElementById('crm-load-err').style.display='block';
+    document.getElementById('crm-err-msg').textContent='Connection timed out. Check your internet and that Firestore rules allow read/write.';
+  },10000);
+
+  // Try connection
+  db.collection('team').limit(1).get()
+    .then(()=>{
+      clearTimeout(timeout);
+      document.getElementById('crm-loading').classList.remove('active');
+      document.getElementById('crm-app').classList.add('active');
+      startCRMListeners();
+      setupCRMHeader();
+      renderDashboard();
+      db.collection('activity').add({message:`${currentUser.name} signed in`,employee:currentUser.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    })
+    .catch(e=>{
+      clearTimeout(timeout);
+      document.getElementById('crm-load-err').style.display='block';
+      document.getElementById('crm-err-msg').textContent='Error: '+e.message+'. Go to Firebase Console → Firestore → Rules and set allow read, write: if true;';
+    });
+}
+
+function setupCRMHeader(){
+  const u=currentUser;
+  const ci=u.colorIdx!==undefined?u.colorIdx:0;
+  const dot=document.getElementById('crm-user-dot');
+  dot.textContent=initials(u.name);
+  dot.className='crm-user-dot '+EC[ci%5];
+  document.getElementById('crm-user-name').textContent=u.name.split(' ')[0];
+  document.getElementById('crm-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+}
+
+function logoutCRM(){
+  if(!confirm('Return to website?'))return;
+  currentUser=null;
+  document.getElementById('crm-app').classList.remove('active');
+  document.getElementById('public-site').style.display='block';
+}
+
+// ── FIRESTORE LISTENERS ──
+function startCRMListeners(){
+  db.collection('jobs').orderBy('createdAt','desc').onSnapshot(snap=>{
+    S.jobs=snap.docs.map(d=>({...d.data(),id:d.id}));
+    refreshCRMActive();
+  });
+  db.collection('clients').orderBy('createdAt','desc').onSnapshot(snap=>{
+    S.clients=snap.docs.map(d=>({...d.data(),id:d.id}));
+    refreshCRMActive();
+  });
+  db.collection('team').orderBy('createdAt').onSnapshot(snap=>{
+    S.team=snap.docs.map(d=>({...d.data(),id:d.id}));
+    buildLoginGrid();renderTeamCards();renderTeamMgmt();populateEmpSelect();
+  });
+  db.collection('activity').orderBy('createdAt','desc').limit(60).onSnapshot(snap=>{
+    S.activity=snap.docs.map(d=>({...d.data(),id:d.id}));
+    renderActivity('home-activity',6);renderActivity('team-activity',40);
+  });
+  db.collection('settings').doc('app').onSnapshot(snap=>{
+    if(snap.exists)S.settings=snap.data();
+  });
+}
+
+function refreshCRMActive(){
+  const p=document.querySelector('.crm-page.active');
+  if(!p)return;
+  const id=p.id;
+  if(id==='cp-home')renderDashboard();
+  else if(id==='cp-jobs')renderJobs();
+  else if(id==='cp-clients')renderClients();
+  else if(id==='cp-team')renderTeamCards();
+}
+
+// ── NAV ──
+function cnavTo(id,el){
+  document.querySelectorAll('.crm-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.cnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cp-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='home')renderDashboard();
+  else if(id==='jobs')renderJobs();
+  else if(id==='clients')renderClients();
+  else if(id==='team'){renderTeamCards();renderActivity('team-activity',40);}
+}
+
+// ── MODALS ──
+function openModal(id){
+  if(id==='m-new-job')resetJobForm();
+  if(id==='m-new-client'){['c-fname','c-lname','c-phone','c-email','c-vehicle','c-notes'].forEach(i=>sv(i,''));}
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModalOut(e,id){if(e.target.id===id)closeModal(id);}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  const now=new Date();
+  const mo=now.getMonth(),yr=now.getFullYear();
+  const rev=S.jobs.filter(j=>j.status==='paid'&&j.date&&new Date(j.date).getMonth()===mo&&new Date(j.date).getFullYear()===yr).reduce((a,j)=>a+(j.total||0),0);
+  document.getElementById('m-rev').textContent=fmt(rev);
+  document.getElementById('m-jobs').textContent=S.jobs.length;
+  document.getElementById('m-new').textContent=S.jobs.filter(j=>j.status==='new').length;
+  document.getElementById('m-pend').textContent=S.jobs.filter(j=>j.status==='pending').length;
+
+  // New online bookings
+  const newB=S.jobs.filter(j=>j.status==='new').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const nEl=document.getElementById('new-bookings-list');
+  nEl.innerHTML=newB.length?newB.map(j=>jobCardHTML(j)).join(''):empty('No new online bookings');
+
+  // Today
+  const today=now.toISOString().split('T')[0];
+  const todayJ=S.jobs.filter(j=>j.date===today);
+  const tEl=document.getElementById('today-list');
+  tEl.innerHTML=todayJ.length?todayJ.map(j=>jobCardHTML(j)).join(''):empty('No jobs scheduled today');
+}
+
+// ── JOBS ──
+function filterJobs(f,el){
+  jobFilter=f;
+  document.querySelectorAll('#pipeline-tabs .ctab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderJobs();
+}
+
+function renderJobs(){
+  const jobs=jobFilter==='all'?S.jobs:S.jobs.filter(j=>j.status===jobFilter);
+  const el=document.getElementById('jobs-list');
+  if(!el)return;
+  el.innerHTML=jobs.length?[...jobs].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(j=>jobCardHTML(j)).join(''):empty('No jobs here');
+}
+
+function jobCardHTML(j){
+  const ini=initials(j.clientName||'?');
+  const svcs=(j.services||[]).map(s=>s.name).join(', ')||'No services';
+  const dateStr=j.date?new Date(j.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  const src=j.source==='online'?'<span class="pill pill-new" style="font-size:9px">Online</span>':'';
+  return`<div class="job-card" onclick="openJobDetail('${j.id}')">
+    <div class="job-avatar">${ini}</div>
+    <div class="job-info">
+      <div class="job-name">${j.clientName||'Unknown'}</div>
+      <div class="job-detail">${j.vehicle||''}</div>
+      <div class="job-detail">${svcs}</div>
+    </div>
+    <div class="job-right">
+      <div class="job-amount">${fmt(j.total)}</div>
+      <span class="pill pill-${j.status||'pending'}">${j.status||'pending'}</span>
+      ${dateStr?`<span style="font-size:11px;color:var(--muted)">${dateStr}</span>`:''}
+      ${j.employeeName?`<span style="font-size:10px;color:var(--muted)">${j.employeeName}</span>`:''}
+      ${src}
+    </div>
+  </div>`;
+}
+
+function openJobDetail(id){
+  const j=S.jobs.find(x=>x.id===id);if(!j)return;
+  const ini=initials(j.clientName||'?');
+  const ci=empColor(j.employeeName||'');
+  document.getElementById('job-detail-body').innerHTML=`
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+      <div class="job-avatar" style="width:52px;height:52px;font-size:18px">${ini}</div>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em">${j.clientName||'—'}</div>
+        <div style="font-size:13px;color:var(--muted)">${j.vehicle||'No vehicle'}</div>
+        ${j.source==='online'?'<span class="pill pill-new" style="margin-top:4px">Online booking</span>':''}
+        ${j.employeeName?`<div style="display:flex;align-items:center;gap:6px;margin-top:6px"><div style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:white;font-family:'Bebas Neue'" class="${ci}">${j.employeeName[0]}</div><span style="font-size:12px;color:var(--muted)">${j.employeeName}</span></div>`:''}
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Services</div>
+    ${(j.services||[]).map(s=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>${s.name}</span><span style="font-family:'DM Mono',monospace;color:var(--teal)">${fmt(s.price)}</span></div>`).join('')}
+    ${(j.addons||[]).map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted)">${a}</div>`).join('')}
+    <div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:600">
+      <span>Total</span><span style="font-family:'DM Mono',monospace;font-size:20px;color:var(--teal)">${fmt(j.total)}</span>
+    </div>
+    ${j.phone?`<div style="font-size:13px;color:var(--muted);margin-bottom:4px">📞 ${j.phone}</div>`:''}
+    ${j.date?`<div style="font-size:13px;color:var(--muted);margin-bottom:4px">📅 ${new Date(j.date+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'})}${j.time?' @ '+j.time:''}</div>`:''}
+    ${j.notes?`<div style="background:var(--card2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--muted);margin:8px 0">${j.notes}</div>`:''}
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:14px 0 8px">Update status</div>
+    <div class="ss" id="job-ss">
+      ${['new','pending','scheduled','done','paid'].map(s=>`<button class="ss-opt ${j.status===s?'a'+s[0]+(s==='paid'?'i':s==='done'?'d':s==='scheduled'?'s':'p'):''}" onclick="updateStatus('${j.id}','${s}',this)">${s}</button>`).join('')}
+    </div>
+    <div class="cb-row">
+      <button class="cb cb-ghost" onclick="openInvoice('${j.id}')">Invoice</button>
+      <button class="cb cb-danger cb-sm" onclick="deleteJob('${j.id}')" style="width:auto">Delete</button>
+    </div>`;
+  openModal('m-job-detail');
+}
+
+async function updateStatus(id,status,el){
+  await db.collection('jobs').doc(id).update({status});
+  await db.collection('activity').add({message:`Job status updated to "${status}" for ${S.jobs.find(j=>j.id===id)?.clientName||'client'}`,employee:currentUser?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  document.querySelectorAll('#job-ss .ss-opt').forEach(b=>{b.className='ss-opt';});
+  el.className='ss-opt a'+status[0]+(status==='paid'?'i':status==='done'?'d':status==='scheduled'?'s':'p');
+}
+
+async function deleteJob(id){
+  if(!confirm('Delete this job?'))return;
+  const j=S.jobs.find(x=>x.id===id);
+  await db.collection('jobs').doc(id).delete();
+  await db.collection('activity').add({message:`Deleted job for ${j?.clientName||'client'}`,employee:currentUser?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  closeModal('m-job-detail');
+}
+
+// ── JOB FORM ──
+let jSelSvc=new Set(),jSelAddon=new Set();
+
+function resetJobForm(){
+  jSelSvc.clear();jSelAddon.clear();
+  ['j-fname','j-lname','j-phone','j-yr','j-model','j-color','j-notes','j-dep'].forEach(id=>sv(id,''));
+  sv('j-client','');sv('j-cond','');sv('j-status','pending');
+  sv('j-date',new Date().toISOString().split('T')[0]);
+  document.getElementById('j-total').textContent='$0';
+  document.getElementById('j-new-fields').style.display='block';
+  document.getElementById('j-status-msg').innerHTML='';
+  buildJobSvcGrid();populateClientSelect();populateEmpSelect();
+}
+
+function buildJobSvcGrid(){
+  const g=document.getElementById('j-svc-grid');g.innerHTML='';
+  SVCS.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;cursor:pointer;transition:all .15s';
+    el.innerHTML=`<div style="font-size:12px;font-weight:500">${s.name}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">$${s.price}</div>`;
+    el.onclick=()=>{jSelSvc.has(i)?jSelSvc.delete(i):jSelSvc.add(i);el.style.borderColor=jSelSvc.has(i)?'var(--teal)':'var(--border)';el.style.background=jSelSvc.has(i)?'var(--teal-bg)':'var(--card2)';updateJTotal();};
+    g.appendChild(el);
+  });
+  const ar=document.getElementById('j-addon-row');ar.innerHTML='';
+  ADDONS.forEach(a=>{
+    const el=document.createElement('span');
+    el.style.cssText='font-size:12px;padding:4px 10px;border-radius:20px;background:var(--card2);border:1px solid var(--border);cursor:pointer;color:var(--muted)';
+    el.textContent=a;
+    el.onclick=()=>{jSelAddon.has(a)?jSelAddon.delete(a):jSelAddon.add(a);el.style.borderColor=jSelAddon.has(a)?'var(--teal)':'var(--border)';el.style.color=jSelAddon.has(a)?'var(--teal)':'var(--muted)';el.style.background=jSelAddon.has(a)?'var(--teal-bg)':'var(--card2)';};
+    ar.appendChild(el);
+  });
+}
+
+function updateJTotal(){const t=[...jSelSvc].reduce((s,i)=>s+SVCS[i].price,0);document.getElementById('j-total').textContent=fmt(t);}
+
+function populateClientSelect(){
+  const sel=document.getElementById('j-client');
+  sel.innerHTML='<option value="">+ New client</option>';
+  S.clients.forEach(c=>{sel.innerHTML+=`<option value="${c.id}">${c.firstName} ${c.lastName||''} — ${c.vehicle||''}</option>`;});
+}
+
+function populateEmpSelect(){
+  const sel=document.getElementById('j-emp');if(!sel)return;
+  sel.innerHTML='<option value="">Unassigned</option>';
+  S.team.forEach(m=>{sel.innerHTML+=`<option value="${m.name}" ${currentUser?.name===m.name?'selected':''}>${m.name}</option>`;});
+}
+
+function prefillClient(){
+  const id=gv('j-client');
+  if(!id){document.getElementById('j-new-fields').style.display='block';return;}
+  const c=S.clients.find(x=>x.id===id);if(!c)return;
+  document.getElementById('j-new-fields').style.display='none';
+  sv('j-model',(c.vehicle||'').split(' ').slice(1).join(' '));
+  sv('j-yr',(c.vehicle||'').split(' ')[0]);
+}
+
+async function saveJob(){
+  const btn=document.getElementById('j-save-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const clientId=gv('j-client');
+    let clientName='',finalClientId=clientId;
+    if(clientId){
+      const c=S.clients.find(x=>x.id===clientId);
+      clientName=c?`${c.firstName} ${c.lastName||''}`.trim():'';
+    } else {
+      const fn=gv('j-fname'),ln=gv('j-lname');
+      clientName=[fn,ln].filter(Boolean).join(' ');
+      if(!fn){showStatus('j-status-msg','Name required','err');btn.disabled=false;btn.textContent='Save Job';return;}
+      const ref=await db.collection('clients').add({firstName:fn,lastName:ln,phone:gv('j-phone'),vehicle:[gv('j-yr'),gv('j-model')].filter(Boolean).join(' '),notes:'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      finalClientId=ref.id;
+    }
+    const svcs=[...jSelSvc].map(i=>SVCS[i]);
+    const total=svcs.reduce((a,s)=>a+s.price,0);
+    const empName=gv('j-emp')||currentUser?.name||'';
+    await db.collection('jobs').add({
+      clientId:finalClientId,clientName,
+      vehicle:[gv('j-yr'),gv('j-color'),gv('j-model')].filter(Boolean).join(' '),
+      condition:gv('j-cond'),services:svcs,addons:[...jSelAddon],total,
+      deposit:parseFloat(gv('j-dep'))||0,status:gv('j-status'),date:gv('j-date'),
+      employeeName:empName,notes:gv('j-notes'),source:'manual',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('activity').add({message:`New job added for ${clientName} (${fmt(total)})`,employee:empName||currentUser?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    closeModal('m-new-job');
+  }catch(e){showStatus('j-status-msg','Error: '+e.message,'err');}
+  btn.disabled=false;btn.textContent='Save Job';
+}
+
+// ── CLIENTS ──
+function renderClients(){
+  const q=(gv('client-search')||'').toLowerCase();
+  const filtered=S.clients.filter(c=>{
+    const name=`${c.firstName} ${c.lastName||''}`.toLowerCase();
+    return !q||name.includes(q)||(c.phone||'').includes(q);
+  });
+  const el=document.getElementById('clients-list');if(!el)return;
+  if(!filtered.length){el.innerHTML=empty('No clients yet');return;}
+  el.innerHTML=filtered.map(c=>{
+    const ini=(c.firstName[0]+(c.lastName?c.lastName[0]:'')).toUpperCase();
+    const jobs=S.jobs.filter(j=>j.clientId===c.id);
+    const spent=jobs.filter(j=>j.status==='paid').reduce((a,j)=>a+(j.total||0),0);
+    const last=jobs.sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+    return`<div class="cust-card" onclick="openClientDetail('${c.id}')">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--teal-bg);border:1.5px solid var(--teal2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--teal);flex-shrink:0">${ini}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:15px">${c.firstName} ${c.lastName||''}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${c.vehicle||'No vehicle on file'}</div></div>
+      </div>
+      <div class="cust-stats">
+        <div class="cust-stat"><div class="cust-stat-val">${jobs.length}</div><div class="cust-stat-label">Jobs</div></div>
+        <div class="cust-stat"><div class="cust-stat-val">${fmt(spent)}</div><div class="cust-stat-label">Spent</div></div>
+        <div class="cust-stat"><div class="cust-stat-val">${last?new Date(last.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</div><div class="cust-stat-label">Last job</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveClient(){
+  const fn=gv('c-fname');if(!fn){alert('First name required');return;}
+  const ref=await db.collection('clients').add({firstName:fn,lastName:gv('c-lname'),phone:gv('c-phone'),email:gv('c-email'),vehicle:gv('c-vehicle'),notes:gv('c-notes'),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  await db.collection('activity').add({message:`New client added: ${fn} ${gv('c-lname')}`,employee:currentUser?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  closeModal('m-new-client');
+}
+
+function openClientDetail(id){
+  const c=S.clients.find(x=>x.id===id);if(!c)return;
+  const ini=(c.firstName[0]+(c.lastName?c.lastName[0]:'')).toUpperCase();
+  const jobs=S.jobs.filter(j=>j.clientId===id).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const spent=jobs.filter(j=>j.status==='paid').reduce((a,j)=>a+(j.total||0),0);
+  document.getElementById('client-detail-body').innerHTML=`
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--teal-bg);border:1.5px solid var(--teal2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--teal);flex-shrink:0">${ini}</div>
+      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em">${c.firstName} ${c.lastName||''}</div>
+      <div style="font-size:13px;color:var(--muted)">${c.phone||''} ${c.email?'· '+c.email:''}</div></div>
+    </div>
+    <div class="crm-metrics" style="margin-bottom:12px">
+      <div class="crm-metric"><div class="crm-metric-val">${jobs.length}</div><div class="crm-metric-label">Total jobs</div></div>
+      <div class="crm-metric"><div class="crm-metric-val">${fmt(spent)}</div><div class="crm-metric-label">Total spent</div></div>
+    </div>
+    ${c.vehicle?`<div style="background:var(--card2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;margin-bottom:12px"><span style="color:var(--muted)">Vehicle: </span>${c.vehicle}</div>`:''}
+    ${c.notes?`<div style="background:var(--card2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--muted);margin-bottom:12px">${c.notes}</div>`:''}
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Job history</div>
+    ${jobs.map(j=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="closeModal('m-client-detail');openJobDetail('${j.id}')">
+      <div><div style="font-size:13px">${(j.services||[]).map(s=>s.name).join(', ')||'No services'}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${j.date?new Date(j.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''} ${j.employeeName?'· '+j.employeeName:''}</div></div>
+      <div style="text-align:right"><div style="font-family:'DM Mono',monospace;font-size:13px">${fmt(j.total)}</div><span class="pill pill-${j.status}" style="margin-top:3px">${j.status}</span></div>
+    </div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:12px 0">No jobs yet</div>'}
+    <div class="cb-row" style="margin-top:14px">
+      <button class="cb cb-primary" onclick="closeModal('m-client-detail');openModal('m-new-job');setTimeout(()=>{sv('j-client','${id}');prefillClient();},80)">+ New Job</button>
+      <button class="cb cb-danger cb-sm" onclick="delClient('${id}')" style="width:auto">Delete</button>
+    </div>`;
+  openModal('m-client-detail');
+}
+
+async function delClient(id){
+  if(!confirm('Delete this client?'))return;
+  await db.collection('clients').doc(id).delete();
+  closeModal('m-client-detail');
+}
+
+// ── TEAM ──
+function renderTeamCards(){
+  const el=document.getElementById('team-cards');if(!el)return;
+  el.innerHTML=S.team.map((m,i)=>{
+    const ci=m.colorIdx!==undefined?m.colorIdx:(i%5);
+    const ini=initials(m.name);
+    const myJobs=S.jobs.filter(j=>j.employeeName===m.name);
+    const myRev=myJobs.filter(j=>j.status==='paid').reduce((a,j)=>a+(j.total||0),0);
+    const mo=new Date().getMonth();
+    const moJobs=myJobs.filter(j=>j.date&&new Date(j.date).getMonth()===mo).length;
+    return`<div class="c-card">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:white;flex-shrink:0" class="${EC[ci%5]}">${ini}</div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em">${m.name}</div><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">${m.role}</div></div>
+      </div>
+      <div style="display:flex;gap:0;border-top:1px solid var(--border);padding-top:12px">
+        <div style="flex:1;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--teal)">${myJobs.length}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em">Total</div></div>
+        <div style="flex:1;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--teal)">${moJobs}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em">This month</div></div>
+        <div style="flex:1;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--teal)">${fmt(myRev)}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em">Revenue</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTeamMgmt(){
+  const el=document.getElementById('team-mgmt');if(!el)return;
+  el.innerHTML=S.team.map((m,i)=>{
+    const ci=m.colorIdx!==undefined?m.colorIdx:(i%5);
+    const ini=initials(m.name);
+    return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-family:'Bebas Neue'" class="${EC[ci%5]}">${ini}</div>
+      <div style="flex:1"><div style="font-size:14px">${m.name}</div><div style="font-size:11px;color:var(--muted)">${m.role}</div></div>
+      <button onclick="db.collection('team').doc('${m.id}').delete()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:20px;padding:4px;line-height:1">×</button>
+    </div>`;
+  }).join('');
+}
+
+async function addEmployee(){
+  const name=gv('new-emp-name'),role=gv('new-emp-role');
+  if(!name)return;
+  const ci=S.team.length%5;
+  await db.collection('team').add({name,role,colorIdx:ci,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  sv('new-emp-name','');
+}
+
+function savePass(){
+  const p=gv('new-pass');if(!p)return;
+  localStorage.setItem(STAFF_PASS_KEY,p);
+  document.getElementById('pass-status').innerHTML='<span style="color:var(--success)">Password saved!</span>';
+  setTimeout(()=>document.getElementById('pass-status').innerHTML='',2000);
+  sv('new-pass','');
+}
+
+// ── ACTIVITY ──
+function renderActivity(elId,limit){
+  const el=document.getElementById(elId);if(!el)return;
+  const items=S.activity.slice(0,limit);
+  if(!items.length){el.innerHTML=empty('No activity yet');return;}
+  el.innerHTML=items.map(a=>{
+    const ts=a.createdAt?.toDate?a.createdAt.toDate():new Date();
+    const timeStr=ts.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+ts.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return`<div class="act-item"><div class="act-dot"></div><div style="flex:1"><div style="font-size:13px">${a.message}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${a.employee||''} · ${timeStr}</div></div></div>`;
+  }).join('');
+}
+
+// ── INVOICE ──
+function openInvoice(id){
+  const j=S.jobs.find(x=>x.id===id);if(!j)return;
+  invoiceJobId=id;
+  sv('inv-disc','');sv('inv-tax','');
+  document.getElementById('invoice-preview-body').innerHTML=`
+    <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:600">${j.clientName}</div><div style="font-size:12px;color:var(--muted)">${j.vehicle||''}</div>${j.employeeName?`<div style="font-size:12px;color:var(--muted)">Serviced by: ${j.employeeName}</div>`:''}</div>
+    ${(j.services||[]).map(s=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px">${s.name}</span><span style="font-family:'DM Mono',monospace;color:var(--teal)">${fmt(s.price)}</span></div>`).join('')}
+    ${(j.addons||[]).map(a=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted)">${a}</div>`).join('')}`;
+  updateInvTotal();
+  closeModal('m-job-detail');
+  openModal('m-invoice');
+}
+
+function updateInvTotal(){
+  const j=invoiceJobId?S.jobs.find(x=>x.id===invoiceJobId):null;if(!j)return;
+  const sub=j.total||0,disc=parseFloat(gv('inv-disc'))||0,tax=parseFloat(gv('inv-tax'))||0;
+  document.getElementById('inv-final').textContent=fmt(Math.round((sub-disc)*(1+tax/100)));
+}
+
+function printInv(){
+  const j=S.jobs.find(x=>x.id===invoiceJobId);if(!j)return;
+  const disc=parseFloat(gv('inv-disc'))||0,taxPct=parseFloat(gv('inv-tax'))||0;
+  const sub=j.total||0,taxAmt=Math.round((sub-disc)*(taxPct/100)),total=sub-disc+taxAmt,dep=j.deposit||0;
+  const pa=document.getElementById('inv-print-area');
+  pa.innerHTML=`<div style="font-family:'DM Sans',sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111">
+    <div style="display:flex;justify-content:space-between;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #111">
+      <div><div style="font-size:22px;font-weight:800">C The Details</div><div style="font-size:11px;color:#555;margin-top:4px">Carlos Garcia · 614-905-8789 · CTheDetails@gmail.com<br>Columbus, Ohio · @C.The.Details · cthedetails.com</div></div>
+      <div style="text-align:right"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#888">Invoice</div><div style="font-size:20px;font-weight:800">INV-${Date.now().toString().slice(-5)}</div><div style="font-size:11px;color:#888">${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:1.5rem">
+      <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:4px">Bill to</div><div style="font-weight:700;font-size:15px">${j.clientName}</div>${j.phone?`<div style="font-size:12px;color:#666">${j.phone}</div>`:''}</div>
+      <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:4px">Vehicle</div><div style="font-weight:600">${j.vehicle||'—'}</div>${j.employeeName?`<div style="font-size:11px;color:#666;margin-top:2px">Serviced by: ${j.employeeName}</div>`:''}</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0"><thead><tr><th style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;padding:6px 0;border-bottom:1px solid #ddd;text-align:left">Service</th><th style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;padding:6px 0;border-bottom:1px solid #ddd;text-align:right">Price</th></tr></thead><tbody>
+    ${(j.services||[]).map(s=>`<tr><td style="padding:9px 0;border-bottom:1px solid #f0f0f0">${s.name}</td><td style="padding:9px 0;border-bottom:1px solid #f0f0f0;text-align:right;font-family:monospace">$${s.price}</td></tr>`).join('')}
+    ${(j.addons||[]).map(a=>`<tr><td style="padding:9px 0;border-bottom:1px solid #f0f0f0;color:#666">${a}</td><td style="padding:9px 0;border-bottom:1px solid #f0f0f0;text-align:right">—</td></tr>`).join('')}
+    </tbody></table>
+    <div style="display:flex;justify-content:flex-end"><div style="width:220px">
+      <table style="width:100%;border-collapse:collapse">
+        <tr><td style="padding:5px 0;color:#666;font-size:13px">Subtotal</td><td style="padding:5px 0;text-align:right;font-family:monospace;font-size:13px">$${sub}</td></tr>
+        ${disc>0?`<tr><td style="padding:5px 0;color:#666;font-size:13px">Discount</td><td style="padding:5px 0;text-align:right;font-family:monospace;font-size:13px">-$${disc}</td></tr>`:''}
+        ${taxAmt>0?`<tr><td style="padding:5px 0;color:#666;font-size:13px">Tax (${taxPct}%)</td><td style="padding:5px 0;text-align:right;font-family:monospace;font-size:13px">$${taxAmt}</td></tr>`:''}
+        <tr><td style="padding-top:10px;font-weight:800;font-size:15px;border-top:2px solid #111">Total</td><td style="padding-top:10px;text-align:right;font-weight:800;font-size:15px;font-family:monospace;border-top:2px solid #111">$${total}</td></tr>
+        ${dep>0?`<tr><td style="padding:5px 0;color:#666;font-size:13px">Deposit paid</td><td style="padding:5px 0;text-align:right;font-family:monospace;font-size:13px">-$${dep}</td></tr><tr><td style="padding-top:8px;font-weight:800;font-size:14px">Balance due</td><td style="padding-top:8px;text-align:right;font-weight:800;font-size:14px;font-family:monospace">$${total-dep}</td></tr>`:''}
+      </table>
+    </div></div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#888;text-align:center">C The Details · Car Wash & Cleaning · Columbus, Ohio · 614-905-8789 · CTheDetails@gmail.com · cthedetails.com</div>
+  </div>`;
+  pa.style.display='block';window.print();setTimeout(()=>pa.style.display='none',1000);
+}
+
+function emailInv(){
+  const j=S.jobs.find(x=>x.id===invoiceJobId);if(!j)return;
+  const c=j.clientId?S.clients.find(x=>x.id===j.clientId):null;
+  const to=c?.email||'';
+  window.open(`mailto:${to}?subject=${encodeURIComponent('Your Invoice from C The Details')}&body=${encodeURIComponent(`Hi ${j.clientName},\n\nThank you for choosing C The Details!\n\nServices: ${(j.services||[]).map(s=>s.name+' - $'+s.price).join(', ')}\nTotal: $${j.total||0}\n\nCarlos Garcia\nC The Details · 614-905-8789\nCTheDetails@gmail.com | cthedetails.com`)}`);
+}
+
+async function markPaid(){
+  if(!invoiceJobId)return;
+  await db.collection('jobs').doc(invoiceJobId).update({status:'paid'});
+  await db.collection('activity').add({message:`Job marked as paid for ${S.jobs.find(j=>j.id===invoiceJobId)?.clientName||'client'}`,employee:currentUser?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  closeModal('m-invoice');notify('Job marked as paid!');
+}
+
+// ── GOOGLE SHEETS ──
+const SHEET_ID='1Kwa7JxLluIboDeX6u85-ZAczIowOjAjJ72jwf3I7dfs';
+function handleSheetsAuth(){
+  if(gToken){gToken=null;document.getElementById('sheets-auth-status').textContent='Not connected';return;}
+  const tok=prompt('Go to developers.google.com/oauthplayground\n1. Select Sheets API v4 → spreadsheets scope\n2. Authorize with your Google account\n3. Exchange code for tokens\n4. Copy & paste the Access token here:');
+  if(tok&&tok.length>20){gToken=tok.trim();document.getElementById('sheets-auth-status').innerHTML='<span class="badge badge-ok">Connected</span>';}
+}
+async function exportToSheets(){
+  if(!gToken){alert('Connect Google account first in settings.');return;}
+  const tab=gv('s-tab')||'Quotes Log';
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(tab)}!A1:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+  let count=0;
+  for(const j of S.jobs){
+    try{
+      const res=await fetch(url,{method:'POST',headers:{'Authorization':'Bearer '+gToken,'Content-Type':'application/json'},body:JSON.stringify({values:[[new Date(j.createdAt?.toDate?.()??Date.now()).toLocaleDateString(),j.employeeName||'',j.clientName||'',j.phone||'',j.vehicle||'',(j.services||[]).map(s=>s.name).join(', '),'$'+(j.total||0),j.date||'',j.status,j.source||'manual']]})});
+      const d=await res.json();if(d.updates)count++;
+    }catch(e){}
+  }
+  alert(`Exported ${count} jobs to Google Sheet.`);
+}
+
+// ── BOOTSTRAP: Load team first so login works even before Firebase ──
+// Load team for login screen (public facing, so we try quietly)
+db.collection('team').orderBy('createdAt').get()
+  .then(snap=>{
+    S.team=snap.docs.map(d=>({...d.data(),id:d.id}));
+    if(S.team.length===0){
+      // Seed default team
+      const defaults=[
+        {name:'Carlos Garcia',role:'owner',colorIdx:0},
+        {name:'Employee 1',role:'employee',colorIdx:1},
+        {name:'Employee 2',role:'employee',colorIdx:2},
+      ];
+      Promise.all(defaults.map(d=>db.collection('team').add({...d,createdAt:firebase.firestore.FieldValue.serverTimestamp()})))
+        .then(()=>db.collection('team').orderBy('createdAt').get())
+        .then(snap2=>{S.team=snap2.docs.map(d=>({...d.data(),id:d.id}));});
+    }
+  })
+  .catch(()=>{}); // silently fail - team loads later
+
+// Init booking grid on public site
+buildBookingSvcGrid();
+// Set default date for booking
+const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+const df=document.getElementById('b-date');
+if(df)df.min=tomorrow.toISOString().split('T')[0];
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
